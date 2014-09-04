@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
-
-This is a temporary script file.
+Just a test script to play with mapping MIDI inputs to my Hue Lights. Not actually called in the LightWorks.
 """
 
 import phue
