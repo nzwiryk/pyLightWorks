@@ -5,30 +5,31 @@ Created on Sun Aug 31 18:28:41 2014
 @author: Nicholas Zwiryk
 """
 
-from multiprocessing import Process
+import threading
 import MidiMonitor
 import PyStageKit as sk
+import config
 from random import randint
 from time import sleep
 
+sk.AllOff()
 def inputHub():
-    MidiMonitor.midiMonitor()
+   MidiMonitor.midiMonitor()
     
 def lightManager():
-    sk.Marquee([sk.red],1,'cw',0.2,0b11001100, MidiMonitor.avgNoteDelta)
-    while MidiMonitor.avgNoteDelta < 400:
-        sk.set_vibration(sk.getArrayVib(0b11111111),sk.randomColor())
-        while MidiMonitor.avgNoteDelta <200:
-            sk.Marquee([sk.blue],20,"cw",MidiMonitor.avgNoteDelta/100, randint(0,255),MidiMonitor.avgNoteDelta)
-            
+    while True:
+        sk.Marquee([sk.red],1,'cw',0.2,0b11001100, config.avgNoteDelta)
+        while config.avgNoteDelta < 400:
+            sk.set_vibration(sk.getArrayVib(0b11111111),sk.randomColor())
+            sleep(randint(0,3))
+            sk.AllOff()
+            while config.avgNoteDelta <200:
+                sk.Marquee([sk.randomColor()],config.avgNoteDelta/30,"cw",config.avgNoteDelta/500, randint(0,255),config.avgNoteDelta)
+         
 
 if __name__=='__main__':
-    p1 = Process(target = inputHub())
-   
-    p2= Process(target = lightManager())
-    p1.start()
-    #sleep(5)
-    p2.start()    
+    threading.Thread(target = inputHub).start()
+    threading.Thread(target = lightManager).start()
 
 
 

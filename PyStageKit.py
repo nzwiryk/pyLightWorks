@@ -7,7 +7,7 @@ Created on Tue Aug 19 18:55:24 2014
 
 import ctypes
 import time
-import MidiMonitor
+import config
 from random import randint
 
 vibLookup = {'red':32768, 'blue':8192, 'green':16384,'yellow':24576, 'fogOn':256, 'fogOff':512}
@@ -72,7 +72,7 @@ def Marquee(color,duration,direction,delay,pattern, avgnd):
     for y in color:
         set_vibration(getArrayVib(pattern),y)
         time.sleep(0.01)                    
-    while time.time() < stop and avgnd+avgnd*0.2>MidiMonitor.avgNoteDelta and avgnd-avgnd*0.2<MidiMonitor.avgNoteDelta:
+    while time.time() < stop and avgnd+avgnd*0.2>config.avgNoteDelta and avgnd-avgnd*0.2<config.avgNoteDelta:
             for x in range(0,8):
                 for y in color:
                     Shift(y,direction,1)
