@@ -13,7 +13,8 @@ from random import randint
 vibLookup = {'red':32768, 'blue':8192, 'green':16384,'yellow':24576, 'fogOn':256, 'fogOff':512}
 colorLookup = {32768:'red',8192:'blue', 16384:'green',24576:'yellow', 256:'fogOn', 512:'fogOff'}
 lastState = {'red':0,'blue':0,'green':0,'yellow':0, 'fog':0}
-
+colorVector = {'red':'ccw','blue':'cw','green':'ccw','yellow':'cw'}
+patternVector = {'red':0b11001100,'blue':0b00000001,'green':0b10101010,'yellow':000010001}
 red = 32768
 blue = 8192
 green = 16384
@@ -22,6 +23,9 @@ fogon = 256
 fogoff = 512
 
 colors = [red,green,blue,yellow]
+
+noteMidi = {'kick':36, 'snare':38, 'yellowTom':48, 'blueTom':45, 'greenTom':43,'closedHiHat':42,'openHiHat':51,'ride':59, 'crash':49}
+midiNote = {36:'kick', 38:'snare', 48:'yellowTom', 45:'blueTom', 43:'greenTom',42:'closedHiHat',51:'openHiHat',59:'ride', 49:'crash'}
 
 #controller = int(raw_input("Enter the numerical controller number, indexing from 0:"))
 controller = 0
@@ -35,10 +39,6 @@ XInputSetState = xinput.XInputSetState
 XInputSetState.argtypes = [ctypes.c_uint, ctypes.POINTER(XINPUT_VIBRATION)]
 XInputSetState.restype = ctypes.c_uint
 
-#vibration = XINPUT_VIBRATION(65535, 65535)
-#XInputSetState(0, ctypes.byref(vibration))
-
-# You can also create a hel0per function like this:
 def set_vibration(left_motor, right_motor):
     global lastLeft
     global lastRight
@@ -67,26 +67,37 @@ def getArrayVib(state):
 def AllOff():
     set_vibration(65535,65535)
     
-def Marquee(color,duration,direction,delay,pattern, avgnd):
-    stop = time.time()+duration
-    for y in color:
-        set_vibration(getArrayVib(pattern),y)
-        time.sleep(0.01)                    
-    while time.time() < stop and avgnd+avgnd*0.2>config.avgNoteDelta and avgnd-avgnd*0.2<config.avgNoteDelta:
-            for x in range(0,8):
-                for y in color:
-                    Shift(y,direction,1)
-                    time.sleep(0.01)
-                    time.sleep(delay)
-    AllOff()
+def Marquee(delay):
+
+    for y in colorVector:
+        if colorVector[y]!=0:
+            set_vibration(getArrayVib(patternVector[y]),vibLookup[y])
+            time.sleep(0.01)
+        
+    for x in range(0,8):
+        for y in colorVector:
+             if colorVector[y] != 0:              
+                 Shift(vibLookup[y],colorVector[y],1)
+                 time.sleep(0.01)
+                 time.sleep(delay)
+
+    
 def Shift(color,direction,count):
     for x in range(0,count):    
         if direction == "cw":
             set_vibration(getArrayVib(rotate(bin(lastState[colorLookup[color]]/256)[2:].zfill(8),count)),color)
         if direction == "ccw":
             set_vibration(getArrayVib(rotate(bin(lastState[colorLookup[color]]/256)[2:].zfill(8),-1*count)),color)
+        
 def rotate(strg,n):
     return int((strg[n:] + strg[:n]),2)
     
 def randomColor():
     return colors[randint(0,len(colors)-1)]
+    
+def getVelVib():
+    return min(colorLookup, key = lambda x:abs(x-config.avgVelocity*512))
+    
+def getTimeVib():
+    return min(colorLookup, key = lambda x:abs(x-config.avgNotedelta))
+    
