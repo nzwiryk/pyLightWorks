@@ -11,10 +11,11 @@ import config
 from random import randint
 
 vibLookup = {'red':32768, 'blue':8192, 'green':16384,'yellow':24576, 'fogOn':256, 'fogOff':512}
-colorLookup = {32768:'red',8192:'blue', 16384:'green',24576:'yellow', 256:'fogOn', 512:'fogOff'}
+colorLookup = {32768:'red',8192:'blue', 16384:'green',24576:'yellow'}
 lastState = {'red':0,'blue':0,'green':0,'yellow':0, 'fog':0}
-colorVector = {'red':'ccw','blue':'cw','green':'ccw','yellow':'cw'}
+colorVector = {'red':0,'blue':0,'green':0,'yellow':0}
 patternVector = {'red':0b11001100,'blue':0b00000001,'green':0b10101010,'yellow':000010001}
+stateLookup = ['cw','ccw',1]
 red = 32768
 blue = 8192
 green = 16384
@@ -99,5 +100,8 @@ def getVelVib():
     return min(colorLookup, key = lambda x:abs(x-config.avgVelocity*512))
     
 def getTimeVib():
-    return min(colorLookup, key = lambda x:abs(x-config.avgNotedelta))
+    return min(colorLookup, key = lambda x:abs(x-config.avgNoteDelta**-1*3e6))
     
+def updateVector():
+    colorVector[colorLookup[getVelVib()]]=stateLookup[randint(0,len(stateLookup)-1)]
+    colorVector[colorLookup[getTimeVib()]]=stateLookup[randint(0,len(stateLookup)-1)]

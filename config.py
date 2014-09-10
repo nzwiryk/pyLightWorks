@@ -10,3 +10,4 @@ avgNoteDelta = 300
 avgVelocity = 50
 lastNotes = []
 noteChart = {'kick':0, 'snare':0, 'yellowTom':0, 'blueTom':0, 'greenTom':0,'closedHiHat':0,'openHiHat':0,'ride':0, 'crash':0}
+lastTimeStamp = 0

@@ -31,12 +31,12 @@ def midiMonitor():
         if lastKeyPress != []: 
             if lastKeyPress[0][0][0] != 128:          
                 lastNote =lastKeyPress[0][0][1]
-                lastTimeStamp = lastKeyPress[0][0][1]
+                config.lastTimeStamp = lastKeyPress[0][0][1]
                 lastVelocity = lastKeyPress[0][0][2]
                 
                 
                 noteBin.appendleft(lastNote)
-                timeBin.appendleft(lastTimeStamp)
+                timeBin.appendleft(config.lastTimeStamp)
                 velocityBin.appendleft(lastVelocity)
                 
                 timeDelta = list(timeBin)
