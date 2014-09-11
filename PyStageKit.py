@@ -69,7 +69,7 @@ def AllOff():
     set_vibration(65535,65535)
     
 def Marquee(delay):
-
+    print 'marquee!'
     for y in colorVector:
         if colorVector[y]!=0:
             set_vibration(getArrayVib(patternVector[y]),vibLookup[y])

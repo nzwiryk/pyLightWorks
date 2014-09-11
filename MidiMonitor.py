@@ -31,9 +31,8 @@ def midiMonitor():
         if lastKeyPress != []: 
             if lastKeyPress[0][0][0] != 128:          
                 lastNote =lastKeyPress[0][0][1]
-                config.lastTimeStamp = lastKeyPress[0][0][1]
+                config.lastTimeStamp = lastKeyPress[0][1]
                 lastVelocity = lastKeyPress[0][0][2]
-                
                 
                 noteBin.appendleft(lastNote)
                 timeBin.appendleft(config.lastTimeStamp)
@@ -44,7 +43,7 @@ def midiMonitor():
                 config.lastNotes = list(noteBin)
                 config.avgVelocity = np.mean(velocityBin)
                 noteHist = np.histogram(list(noteBin),sorted((list(histBin))))
-               
+                
                     
                 
                 for x in noteHist[1][0:len(noteHist[1])-1]:
