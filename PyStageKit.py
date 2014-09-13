@@ -68,21 +68,19 @@ def getArrayVib(state):
 def AllOff():
     set_vibration(65535,65535)
     
-def Marquee(delay):
-    print 'marquee!'
+def lightBoot():
     for y in colorVector:
         if colorVector[y]!=0:
             set_vibration(getArrayVib(patternVector[y]),vibLookup[y])
             time.sleep(0.01)
-        
-    for x in range(0,8):
-        for y in colorVector:
-             if colorVector[y] != 0:              
-                 Shift(vibLookup[y],colorVector[y],1)
-                 time.sleep(0.01)
-                 time.sleep(delay)
 
-    
+def lightUpdate():
+    for y in colorVector:
+        if colorVector[y] != 0:              
+             Shift(vibLookup[y],colorVector[y],1)
+             time.sleep(0.01)
+             
+
 def Shift(color,direction,count):
     for x in range(0,count):    
         if direction == "cw":
@@ -103,5 +101,6 @@ def getTimeVib():
     return min(colorLookup, key = lambda x:abs(x-config.avgNoteDelta**-1*3e6))
     
 def updateVector():
+    colorVector = {'red':0,'blue':0,'green':0,'yellow':0}
     colorVector[colorLookup[getVelVib()]]=stateLookup[randint(0,len(stateLookup)-1)]
     colorVector[colorLookup[getTimeVib()]]=stateLookup[randint(0,len(stateLookup)-1)]
