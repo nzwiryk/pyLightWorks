@@ -16,4 +16,4 @@ colorVector = {'red':0,'blue':0,'green':0,'yellow':0}
 hueColorState = {hr.l1:hr.hueColors['red'], hr.l2:hr.hueColors['purple'], hr.l3:hr.hueColors['blue']}
 
 patternVector = {'red':0b10000000,'blue':0b00000001,'green':0b10101010,'yellow':000010001}
-patternStates = [0b00000001,0b00110011,0b10101010,0b10001001, 0b00010001]
+patternStates = [0b00000001,0b00110011,0b10101010,0b10001001, 0b00010001, 0b11111111]

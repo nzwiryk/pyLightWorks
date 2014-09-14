@@ -126,8 +126,8 @@ def updateVector(avgVelocity, avgNoteDelta):
      
     
 def updatePattern():
-    for x in range(0,len(config.patternVector)-1):
-        config.patternVector[x] = config.patternStates[randint(0,(len(config.patternStates)-1))]
+    for key, value in config.patternVector.iteritems():
+        config.patternVector[key] = config.patternStates[randint(0,(len(config.patternStates)-1))]
 
 def updateHue():
     currentColors = []
