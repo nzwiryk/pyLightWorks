@@ -7,15 +7,20 @@ Created on Tue Aug 19 18:55:24 2014
 
 import ctypes
 import time
-import config
 from random import randint
+import config
+import pyHueRock as hr
+
 
 vibLookup = {'red':32768, 'blue':8192, 'green':16384,'yellow':24576, 'fogOn':256, 'fogOff':512}
 colorLookup = {32768:'red',8192:'blue', 16384:'green',24576:'yellow'}
 lastState = {'red':0,'blue':0,'green':0,'yellow':0, 'fog':0}
-colorVector = {'red':0,'blue':0,'green':0,'yellow':0}
-patternVector = {'red':0b11001100,'blue':0b00000001,'green':0b10101010,'yellow':000010001}
+
+
 stateLookup = ['cw','ccw',1]
+
+
+
 red = 32768
 blue = 8192
 green = 16384
@@ -69,19 +74,30 @@ def AllOff():
     set_vibration(65535,65535)
     
 def lightBoot():
-    for y in colorVector:
-        if colorVector[y]!=0:
-            set_vibration(getArrayVib(patternVector[y]),vibLookup[y])
+    
+    for y in config.colorVector:
+        if config.colorVector[y]!=0:
+            set_vibration(getArrayVib(config.patternVector[y]),vibLookup[y])
             time.sleep(0.01)
+        elif config.colorVector[y] == 0:
+            set_vibration(0,vibLookup[y])
 
 def lightUpdate():
-    for y in colorVector:
-        if colorVector[y] != 0:              
-             Shift(vibLookup[y],colorVector[y],1)
+    
+    for y in config.colorVector:
+        if config.colorVector[y] != 0:              
+             Shift(vibLookup[y],config.colorVector[y],1)
              time.sleep(0.01)
+        elif config.colorVector[y] == 0:
+             set_vibration(0,vibLookup[y])
+
+             
+             
+    
              
 
 def Shift(color,direction,count):
+    #print 'shift '+str(color)
     for x in range(0,count):    
         if direction == "cw":
             set_vibration(getArrayVib(rotate(bin(lastState[colorLookup[color]]/256)[2:].zfill(8),count)),color)
@@ -94,13 +110,28 @@ def rotate(strg,n):
 def randomColor():
     return colors[randint(0,len(colors)-1)]
     
-def getVelVib():
-    return min(colorLookup, key = lambda x:abs(x-config.avgVelocity*512))
+def getVelVib(avgVelocity):
     
-def getTimeVib():
-    return min(colorLookup, key = lambda x:abs(x-config.avgNoteDelta**-1*3e6))
+    return min(colorLookup, key = lambda x:abs(x-avgVelocity*512))
     
-def updateVector():
-    colorVector = {'red':0,'blue':0,'green':0,'yellow':0}
-    colorVector[colorLookup[getVelVib()]]=stateLookup[randint(0,len(stateLookup)-1)]
-    colorVector[colorLookup[getTimeVib()]]=stateLookup[randint(0,len(stateLookup)-1)]
+def getTimeVib(avgNoteDelta):
+    return min(colorLookup, key = lambda x:abs(x-avgNoteDelta**-1*3e6))
+    
+def updateVector(avgVelocity, avgNoteDelta):
+
+    config.colorVector = {'red':0,'blue':0,'green':0,'yellow':0}
+    
+    config.colorVector[colorLookup[getVelVib(avgVelocity)]]=stateLookup[randint(0,len(stateLookup)-1)]
+    config.colorVector[colorLookup[getTimeVib(avgNoteDelta)]]=stateLookup[randint(0,len(stateLookup)-1)]
+     
+    
+def updatePattern():
+    for x in range(0,len(config.patternVector)-1):
+        config.patternVector[x] = config.patternStates[randint(0,(len(config.patternStates)-1))]
+
+def updateHue():
+    currentColors = []
+    for x in range (0,len(hr.lights)-1):
+        currentColors.append(randint(hr.hueColors['blue'],hr.hueColors['red']))
+        hr.lights[x].hue = currentColors[x]
+    
