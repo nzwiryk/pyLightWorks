@@ -6,6 +6,7 @@ Created on Sat Sep 13 20:03:50 2014
 """
 import phue
 
+globalBrightness = 170
 b = phue.Bridge('192.168.1.12')
 b.connect()
 
@@ -17,8 +18,9 @@ lights = [l1, l2, l3]
 
 for x in lights:
     x.transitiontime = 0
-    x.brightness = 155
+    x.brightness = globalBrightness
     x.hue = 170
+    x.saturation = 255
     
     
 hueColors = {'red':65535, 'yellow':12750,'lightGreen': 25500,'green':36210,'blue':46920,'purple': 56100}

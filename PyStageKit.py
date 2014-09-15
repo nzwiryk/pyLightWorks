@@ -72,6 +72,11 @@ def getArrayVib(state):
     return vib
 def AllOff():
     set_vibration(65535,65535)
+
+def allOn():
+    for x in colors:
+        set_vibration(65535,x)
+        time.sleep(0.01)
     
 def lightBoot():
     
