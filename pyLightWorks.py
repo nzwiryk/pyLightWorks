@@ -31,13 +31,14 @@ histBin = [36,38,42,43,45,48,49,51,60]
 sensitivity = 0.25
 timeBin.append(0)
 
+lArray = sk.ledArray(0,{'red':0,'blue':0,'green':0,'yellow':0, 'fog':0},{'red':0,'blue':0,'green':0,'yellow':0},{'red':0b10000000,'blue':0b00000001,'green':0b10101010,'yellow':000010001})
+rArray = sk.ledArray(1,{'red':0,'blue':0,'green':0,'yellow':0, 'fog':0},{'red':0,'blue':0,'green':0,'yellow':0},{'red':0b10000000,'blue':0b00000001,'green':0b10101010,'yellow':000010001})
+
 def calcFlagNotes(threshold):
     global flaggedNote
     noteThresholdCount = binSize*flagThreshold
     
     if config.noteChart[max(config.noteChart.iteritems(), key=operator.itemgetter(1))[0]] >= noteThresholdCount:
-        #print config.noteChart
-        
         flaggedNote = noteMidi[max(config.noteChart.iteritems(), key=operator.itemgetter(1))[0]]
     else:
         return -1
@@ -55,7 +56,8 @@ def midiMonitor():
     avgVelocity = 64
     timeToSwitch = 0.1
     lastTimeStamp = time.time()
-    sk.lightBoot()
+    lArray.lightBoot()
+    rArray.lightBoot()
     accentFlag = False
     while True:
         lastKeyPress = m.read(1)
@@ -89,29 +91,31 @@ def midiMonitor():
                     flaggedNote = -1
                 
         if accentFlag:
-           sk.allOn()
-           
+           lArray.allOn()
+           rArray.allOn()
            time.sleep(0.04)
            accentFlag = False
-           sk.AllOff()
-           
-               
-           sk.lightBoot()
+           lArray.AllOff()
+           rArray.AllOff()
+           lArray.lightBoot()
+           rArray.lightBoot()
            
         if (oldNoteDelta + sensitivity*oldNoteDelta) <avgNoteDelta or (oldNoteDelta - sensitivity*oldNoteDelta) > avgNoteDelta:
-            sk.updateVector(avgVelocity,avgNoteDelta)
-            sk.updatePattern()
+            lArray.updateVector(avgVelocity,avgNoteDelta)
+            rArray.mirrorState(lArray)
+            lArray.updatePattern()
             sk.updateHue()
-            sk.lightBoot()
-            #print 'update!'
-        
+            lArray.lightBoot()
+            rArray.lightBoot()
+ 
         
         timeToSwitch -= (time.time() - lastTimeStamp)
         lastTimeStamp = time.time()
         oldNoteDelta = avgNoteDelta
-       # print timeToSwitch
+
         if timeToSwitch < 0:
-                sk.lightUpdate()
+                lArray.lightUpdate()
+                rArray.lightUpdate()
                 timeToSwitch = float(avgNoteDelta/(700))
                
-                #print timeToSwitch
+    
