@@ -93,7 +93,7 @@ def midiMonitor():
         if accentFlag:
            lArray.allOn()
            rArray.allOn()
-           time.sleep(0.04)
+           time.sleep(0.02)
            accentFlag = False
            lArray.AllOff()
            rArray.AllOff()
